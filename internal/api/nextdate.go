@@ -28,7 +28,6 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 		if err != nil || days < 1 || days > 400 {
 			return "", fmt.Errorf("неверное количество дней (должно быть 1-400)")
 		}
-		// Начинаем с date и увеличиваем, пока не станет больше now
 		for {
 			date = date.AddDate(0, 0, days)
 			if date.After(now) {
