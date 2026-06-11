@@ -57,6 +57,10 @@ func AddTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"id": id})
+		w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(map[string]string{"id": id}); err != nil {
+		log.Printf("Ошибка кодирования ответа: %v", err)
+		http.Error(w, `{"error":"Ошибка формирования ответа"}`, http.StatusInternalServerError)
+		return
+	}
 }

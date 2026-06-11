@@ -9,6 +9,11 @@ import (
 )
 
 func DoneTaskHandler(w http.ResponseWriter, r *http.Request) {
+    if r.Method != http.MethodPost {
+        http.Error(w, `{"error":"Метод не поддерживается"}`, http.StatusMethodNotAllowed)
+        return
+    }
+
     idStr := r.FormValue("id")
     if idStr == "" {
         http.Error(w, `{"error":"Не указан идентификатор"}`, http.StatusBadRequest)

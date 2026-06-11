@@ -1,9 +1,8 @@
 package database
 
 import (
-    "strconv"
-    
     "database/sql"
+    "strconv"
 )
 
 type Task struct {
@@ -40,7 +39,6 @@ func GetTask(idStr string) (Task, error) {
     if err != nil {
         return Task{}, err
     }
-    task.ID = idStr
     return task, nil
 }
 
@@ -107,5 +105,11 @@ func Tasks(limit int) ([]Task, error) {
         t.ID = strconv.Itoa(id)
         tasks = append(tasks, t)
     }
+
+    // Проверяем ошибки после завершения итерации
+    if err := rows.Err(); err != nil {
+        return nil, err
+    }
+
     return tasks, nil
 }

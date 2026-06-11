@@ -1,19 +1,21 @@
 package api
 
 import (
-
 	"net/http"
 	"time"
 )
 
 // NextDateHandler обрабатывает GET /api/nextdate
 func NextDateHandler(w http.ResponseWriter, r *http.Request) {
-	// Получаем параметры из запроса
+	if r.Method != http.MethodGet {
+		http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
+		return
+	}
+
 	nowStr := r.FormValue("now")
 	date := r.FormValue("date")
 	repeat := r.FormValue("repeat")
 
-	// Если параметр now не задан, используем текущую дату
 	var now time.Time
 	var err error
 	if nowStr == "" {
@@ -26,14 +28,15 @@ func NextDateHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Вычисляем следующую дату
 	nextDate, err := NextDate(now, date, repeat)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Возвращаем результат
 	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
-	w.Write([]byte(nextDate))
+	if _, err := w.Write([]byte(nextDate)); err != nil {
+		http.Error(w, "Ошибка записи ответа", http.StatusInternalServerError)
+		return
+	}
 }

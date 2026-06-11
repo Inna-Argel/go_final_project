@@ -9,6 +9,8 @@ import (
     "scheduler/internal/database"
 )
 
+const dateFormat = "20060102"
+
 func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
     var task database.Task
 
@@ -32,10 +34,10 @@ func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
     nowDate := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 
     if task.Date == "" {
-        task.Date = nowDate.Format("20060102")
+        task.Date = nowDate.Format(dateFormat)
     }
 
-    date, err := time.Parse("20060102", task.Date)
+    date, err := time.Parse(dateFormat, task.Date)
     if err != nil {
         http.Error(w, `{"error":"Неверный формат даты"}`, http.StatusBadRequest)
         return
@@ -49,7 +51,7 @@ func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
         }
         task.Date = nextDate
     } else if date.Before(nowDate) && task.Repeat == "" {
-        task.Date = nowDate.Format("20060102")
+        task.Date = nowDate.Format(dateFormat)
     }
 
     err = database.UpdateTask(task)

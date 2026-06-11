@@ -7,8 +7,10 @@ import (
     "scheduler/internal/database"
 )
 
+const defaultTasksLimit = 50
+
 func TasksHandler(w http.ResponseWriter, r *http.Request) {
-    tasks, err := database.Tasks(50)
+    tasks, err := database.Tasks(defaultTasksLimit)
     if err != nil {
         http.Error(w, `{"error":"Ошибка получения задач"}`, http.StatusInternalServerError)
         return
