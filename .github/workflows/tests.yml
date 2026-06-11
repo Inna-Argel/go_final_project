@@ -1,33 +1,28 @@
 name: Go
 
-on: [push]
+on:
+  push:
+    branches: [ first-iteration ]
+  pull_request:
+    branches: [ first-iteration ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        go-version: [1.24.x]
-  
     steps:
     - uses: actions/checkout@v4
-
-    - name: Setup Go
+    - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.24.x'
-        
-    - name: Display Go version
-      run: go version
-
+        go-version: '1.22'
     - name: Install dependencies
-      run: go mod tidy
-
-    - name: Run local server
       run: |
-        CGO_ENABLED=0 GOOS=linux go run main.go &
-        sleep 100
-        go test -run ^TestApp$ ./tests
-        
-        
+        go get github.com/jmoiron/sqlx
+        go get modernc.org/sqlite
+        go get github.com/stretchr/testify
+    - name: Run server
+      run: |
+        go run main.go &
+        sleep 5
+    - name: Test
+      run: go test -v ./tests
